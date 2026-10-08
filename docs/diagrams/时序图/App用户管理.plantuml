@@ -1,0 +1,31 @@
+@startuml
+actor "管理员" as admin
+participant "用户信息查询界面" as queryPage
+database "系统记录" as systemRecords
+participant "系统" as system
+
+activate admin
+admin -> queryPage: 进入用户信息查询界面
+activate queryPage
+
+admin -> queryPage: 输入要查询的用户名称关键字
+queryPage -> system: 管理员输入查询关键字请求
+activate system
+
+system -> systemRecords: 模糊查询用户列表
+activate systemRecords
+systemRecords --> system: 用户列表结果
+deactivate systemRecords
+
+admin -> queryPage: 选择某一用户
+queryPage -> system: 管理员选择用户请求
+activate system
+
+system -> systemRecords: 获取用户数据统计信息
+activate systemRecords
+systemRecords --> system: 数据统计结果
+deactivate systemRecords
+
+deactivate admin
+deactivate system
+@enduml

@@ -1,0 +1,59 @@
+@startuml
+actor "App用户" as user
+participant "图片浏览" as homePage
+database "系统DB" as systemRecords
+participant "系统" as system
+
+activate user
+user -> homePage: 进入App首页界面
+activate homePage
+
+user -> homePage: 选择图片分类
+homePage -> system: 用户选择分类请求
+activate system
+
+system -> systemRecords: 获取所选分类下的所有图片
+activate systemRecords
+systemRecords --> system: 图片列表结果
+deactivate systemRecords
+
+user -> homePage: 选择排序方式
+homePage -> system: 用户选择排序方式请求
+activate system
+
+system -> systemRecords: 根据排序方式重新展示图片列表
+activate systemRecords
+systemRecords --> system: 重新排序后的图片列表结果
+deactivate systemRecords
+
+user -> homePage: 浏览和查看图片详细信息
+user -> homePage: 上传图片进行搜索
+homePage -> system: 用户选择上传图片请求
+activate system
+
+system -> systemRecords: 展示上传图片的选项
+activate systemRecords
+systemRecords --> system: 上传图片选项结果
+deactivate systemRecords
+
+user -> homePage: 选择并上传想要查询的图片
+homePage -> system: 用户上传图片请求
+activate system
+
+system -> systemRecords: 处理上传图片，展示相关数据
+activate systemRecords
+systemRecords --> system: 处理上传图片结果
+deactivate systemRecords
+
+user -> homePage: 点击收藏按钮
+homePage -> system: 用户收藏图片请求
+activate system
+
+system -> systemRecords: 将图片添加到用户收藏夹
+activate systemRecords
+systemRecords --> system: 添加收藏结果
+deactivate systemRecords
+
+deactivate user
+deactivate system
+@enduml

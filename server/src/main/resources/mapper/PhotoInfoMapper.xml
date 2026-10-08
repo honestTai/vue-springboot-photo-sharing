@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.server.mapper.PhotoInfoMapper">
+    <update id="updatePhotoInfoById">
+        update photoinfo
+        set photo_url=#{photoUrl},
+            tag_id=#{tagId},
+            file_path=#{filePath},
+            fingerprint=#{fingerprint},
+            title=#{title}
+        where id = #{id}
+    </update>
+    <update id="updatePhotoInfoByFilePath">
+        update photoinfo
+        set photo_url=#{photoUrl},
+            tag_id=#{tagId},
+            user_id=#{userId},
+            fingerprint=#{fingerprint},
+            title=#{title}
+        where file_path = #{filePath}
+    </update>
+    <update id="updatePhotoInfoByFilePathAndId">
+        update photoinfo
+        set photo_url=#{photoUrl},
+            tag_id=#{tagId},
+            user_id=#{userId},
+            fingerprint=#{fingerprint},
+            title=#{title}
+        where file_path = #{filePath}
+          and id = #{id}
+    </update>
+
+    <select id="POSTS_LISTS" resultType="com.app.server.dto.PostsList">
+        SELECT t1.id,
+        t1.photo_url AS photoUrl,
+        t1.tag_id AS tagId,
+        t1.dateTime,
+        t1.user_id AS userId,
+        t1.file_path AS filePath,
+        t1.fingerprint,
+        t1.title,
+        t2.name AS tagTitle,
+        COUNT(DISTINCT t3.id) AS collectTotal,
+        COUNT( DISTINCT t4.id) AS likeTotal,
+        t5.name as userName,
+        t5.userimageurl
+        FROM photoinfo t1
+        JOIN tag t2 ON t1.tag_id = t2.id
+        LEFT JOIN usercollection t3 ON t1.id = t3.photo_id
+        LEFT JOIN liketable t4 ON t1.id = t4.photo_id
+        LEFT JOIN userinfo t5 ON t1.user_id = t5.id
+        <where>
+            <if test="tagId != null">
+                AND t1.tag_id = #{tagId}
+            </if>
+            <if test="title != null and title != ''">
+                AND t1.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+        GROUP BY t1.id,
+        t1.photo_url,
+        t1.tag_id,
+        t1.dateTime,
+        t1.user_id,
+        t1.file_path,
+        t1.fingerprint,
+        t1.title,
+        t2.name
+        <choose>
+            <when test="sort == 0">
+                ORDER BY t1.dateTime DESC
+            </when>
+            <when test="sort == 1">
+                ORDER BY t1.dateTime ASC
+            </when>
+            <when test="sort == 2">
+                ORDER BY collectTotal DESC
+            </when>
+            <when test="sort == 3">
+                ORDER BY collectTotal ASC
+            </when>
+            <when test="sort == 4">
+                ORDER BY likeTotal DESC
+            </when>
+            <when test="sort == 5">
+                ORDER BY likeTotal ASC
+            </when>
+        </choose>
+    </select>
+
+    <insert id="add" parameterType="com.app.server.entity.PhotoInfo">
+        insert into photoinfo(photo_url, tag_id, dateTime, user_id, file_path, fingerprint, title)
+        values (#{photoUrl}, #{tagId}, #{dateTime}, #{userId}, #{filePath}, #{fingerprint}, #{title})
+    </insert>
+
+    <delete id="deleteById">
+        delete
+        from photoinfo
+        where id = #{photoId,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteByPhotoPath">
+        delete
+        from photoinfo
+        where file_path = #{filePath}
+          and tag_id = -1
+    </delete>
+
+    <select id="selectAll" resultType="com.app.server.entity.PhotoInfo">
+        select t1.id,
+               t1.photo_url as photoUrl,
+               t1.tag_id    as tagId,
+               t1.dateTime,
+               t1.user_id   as userId,
+               t1.file_path as filePath,
+               t1.fingerprint,
+               t1.title
+        from photoinfo t1
+    </select>
+    <select id="selectByTapAndLikeTitle" resultType="com.app.server.dto.PhotoListDto">
+        select v.* from (
+        select t1.*,t2.id as tagId,t2.name as tagName from photoinfo t1,tag t2 where t1.tag_id=t2.id)v
+        where 1=1
+        <if test="param1!=null || param1!=''">
+            and v.title like CONCAT('%',#{param1},'%')
+        </if>
+        <if test="param2!=null">
+            and v.tagId=#{param2}
+        </if>
+    </select>
+    <select id="selectOneById" resultType="com.app.server.dto.PostsList">
+        SELECT t1.id,
+        t1.photo_url AS photoUrl,
+        t1.tag_id AS tagId,
+        t1.dateTime,
+        t1.user_id AS userId,
+        t1.file_path AS filePath,
+        t1.fingerprint,
+        t1.title,
+        t2.name AS tagTitle,
+        COUNT(DISTINCT t3.id) AS collectTotal,
+        COUNT(DISTINCT t4.id) AS likeTotal,
+        t5.name as userName,
+        t5.userimageurl
+        FROM photoinfo t1
+        JOIN tag t2 ON t1.tag_id = t2.id
+        LEFT JOIN usercollection t3 ON t1.id = t3.photo_id
+        LEFT JOIN liketable t4 ON t1.id = t4.photo_id
+        LEFT JOIN userinfo t5 ON t1.user_id = t5.id
+        where t1.id = #{x}
+        GROUP BY t1.id,
+        t1.photo_url,
+        t1.tag_id,
+        t1.dateTime,
+        t1.user_id,
+        t1.file_path,
+        t1.fingerprint,
+        t1.title,
+        t2.name
+    </select>
+    <select id="selectPhotoByPath" resultType="com.app.server.entity.PhotoInfo">
+        select t1.id,
+               t1.photo_url as photoUrl,
+               t1.tag_id    as tagId,
+               t1.dateTime,
+               t1.user_id   as userId,
+               t1.file_path as filePath,
+               t1.fingerprint,
+               t1.title
+        from photoinfo t1
+        where t1.file_path = #{paths}
+    </select>
+</mapper>

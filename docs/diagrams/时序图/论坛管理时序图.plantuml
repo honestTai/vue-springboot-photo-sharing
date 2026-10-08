@@ -1,0 +1,58 @@
+@startuml
+actor "管理员" as admin
+participant "论坛管理界面" as forumPage
+database "系统记录" as systemRecords
+participant "系统" as system
+
+activate admin
+admin -> forumPage: 进入论坛管理界面
+activate forumPage
+
+admin -> forumPage: 输入关键字进行模糊查询
+forumPage -> system: 管理员输入查询关键字请求
+activate system
+
+system -> systemRecords: 模糊查询论坛内容列表
+activate systemRecords
+systemRecords --> system: 论坛内容列表结果
+deactivate systemRecords
+
+admin -> forumPage: 选择某一论坛
+forumPage -> system: 管理员选择论坛请求
+activate system
+
+system -> systemRecords: 获取论坛详细信息
+activate systemRecords
+systemRecords --> system: 详细信息结果
+deactivate systemRecords
+
+admin -> forumPage: 查看论坛评论内容
+forumPage -> system: 管理员查看评论请求
+activate system
+
+system -> systemRecords: 获取评论内容
+activate systemRecords
+systemRecords --> system: 评论内容结果
+deactivate systemRecords
+
+admin -> forumPage: 删除评论
+forumPage -> system: 管理员删除评论请求
+activate system
+
+system -> systemRecords: 处理评论删除
+activate systemRecords
+systemRecords --> system: 处理结果
+deactivate systemRecords
+
+admin -> forumPage: 删除整个论坛内容
+forumPage -> system: 管理员删除论坛请求
+activate system
+
+system -> systemRecords: 处理论坛删除
+activate systemRecords
+systemRecords --> system: 处理结果
+deactivate systemRecords
+
+deactivate admin
+deactivate system
+@enduml

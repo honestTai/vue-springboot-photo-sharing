@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.server.mapper.PhotoCircleMapper">
+
+    <insert id="addPhotoCircle">
+        insert into photocircle(userId,comment,dateTime,file,title)values
+        (#{userId,jdbcType=INTEGER},#{comment,jdbcType=VARCHAR},#{dateTime},#{file,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR})
+
+    </insert>
+    <delete id="delete">
+        delete
+        from photocircle
+        where id = #{id}
+    </delete>
+
+    <select id="selectList" resultType="com.app.server.entity.PhotoCircle">
+        SELECT t1.*,
+        COUNT(DISTINCT t3.id) AS viewCount,
+        COUNT(DISTINCT t4.id) AS likeTotal,
+        COUNT(DISTINCT t6.id) AS commentCount,
+        t5.name as userName,
+        t5.userimageurl
+        FROM photocircle t1
+        LEFT JOIN `view` t3 on t3.comment_id = t1.id
+        LEFT JOIN liketable t4 ON t1.id = t4.comment_id
+        LEFT JOIN userinfo t5 ON t1.userId = t5.id
+        LEFT JOIN comments t6 on t6.photoCircleId = t1.id
+        <where>
+            <if test="title !=null and title !=''">
+                t1.title like CONCAT('%',#{title},'%')
+            </if>
+        </where>
+        GROUP BY t1.id,t1.`comment`,t1.title,t1.userId
+    </select>
+
+    <select id="selectTreeAndLikeUserNameAndComments" resultType="com.app.server.entity.PhotoCircle" parameterType="com.app.server.base.Page">
+        SELECT t1.*,
+        COUNT(DISTINCT t3.id) AS viewCount,
+        COUNT(DISTINCT t4.id) AS likeTotal,
+        COUNT(DISTINCT t6.id) AS commentCount,
+        t5.name as userName,
+        t5.userimageurl
+        FROM photocircle t1
+        LEFT JOIN `view` t3 on t3.comment_id = t1.id
+        LEFT JOIN liketable t4 ON t1.id = t4.comment_id
+        LEFT JOIN userinfo t5 ON t1.userId = t5.id
+        LEFT JOIN comments t6 on t6.photoCircleId = t1.id
+        <where>
+            <if test="comment !=null and comment !=''">
+                t1.comment like CONCAT('%',#{comment},'%')
+            </if>
+        </where>
+        GROUP BY t1.id,t1.`comment`,t1.title,t1.userId
+    </select>
+
+    <update id="updateTotal">
+        update photocircle set total = total+1 where id = #{photoCircleId,jdbcType=INTEGER}
+    </update>
+    <update id="updateTotalMinusOne">
+        update `photocircle` set total = total -1 where id=#{photoCircleId}
+    </update>
+</mapper>

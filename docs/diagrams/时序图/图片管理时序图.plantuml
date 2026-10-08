@@ -1,0 +1,58 @@
+@startuml
+actor "管理员" as admin
+participant "图片管理界面" as imagePage
+database "系统记录" as systemRecords
+participant "系统" as system
+
+activate admin
+admin -> imagePage: 进入图片管理界面
+activate imagePage
+
+admin -> imagePage: 输入关键字进行模糊查询
+imagePage -> system: 管理员输入查询关键字请求
+activate system
+
+system -> systemRecords: 模糊查询图片列表
+activate systemRecords
+systemRecords --> system: 图片列表结果
+deactivate systemRecords
+
+admin -> imagePage: 进行分类检索
+imagePage -> system: 管理员选择分类请求
+activate system
+
+system -> systemRecords: 分类查询图片列表
+activate systemRecords
+systemRecords --> system: 图片列表结果
+deactivate systemRecords
+
+admin -> imagePage: 选择某一图片
+imagePage -> system: 管理员选择图片请求
+activate system
+
+system -> systemRecords: 获取图片详细信息
+activate systemRecords
+systemRecords --> system: 详细信息结果
+deactivate systemRecords
+
+admin -> imagePage: 创建新图片内容
+imagePage -> system: 管理员创建图片请求
+activate system
+
+system -> systemRecords: 后台创建图片内容
+activate systemRecords
+systemRecords --> system: 创建结果
+deactivate systemRecords
+
+admin -> imagePage: 删除违规图片
+imagePage -> system: 管理员删除图片请求
+activate system
+
+system -> systemRecords: 处理违规图片删除
+activate systemRecords
+systemRecords --> system: 处理结果
+deactivate systemRecords
+
+deactivate admin
+deactivate system
+@enduml

@@ -1,0 +1,62 @@
+@startuml
+actor "App用户" as user
+participant "论坛浏览" as browsePage
+database "系统记录" as systemRecords
+participant "系统" as system
+
+activate user
+user -> browsePage: 进入信息浏览界面
+activate browsePage
+
+user -> browsePage: 查询论坛内容
+browsePage -> system: 用户查询请求
+activate system
+
+system -> systemRecords: 获取论坛内容
+activate systemRecords
+systemRecords --> system: 论坛内容结果
+deactivate systemRecords
+
+user -> browsePage: 选择排序方式
+user -> browsePage: 发布论坛内容
+browsePage -> system: 用户发布请求
+activate system
+
+system -> systemRecords: 存储论坛内容
+activate systemRecords
+systemRecords --> system: 存储结果
+deactivate systemRecords
+
+alt 论坛内容浏览
+  user -> browsePage: 点击论坛内容
+  browsePage -> system: 获取论坛内容详情
+  activate system
+
+  system -> systemRecords: 获取评论和点赞信息
+  activate systemRecords
+  systemRecords --> system: 评论和点赞信息结果
+  deactivate systemRecords
+
+  user -> browsePage: 发表评论
+  browsePage -> system: 用户评论请求
+  activate system
+  
+  system -> systemRecords: 存储评论
+  activate systemRecords
+  systemRecords --> system: 存储结果
+  deactivate systemRecords
+
+  user -> browsePage: 点赞论坛内容
+  browsePage -> system: 用户点赞请求
+  activate system
+  
+  system -> systemRecords: 处理点赞
+  activate systemRecords
+  systemRecords --> system: 处理结果
+  deactivate systemRecords
+
+  user -> browsePage: 离开内容详情界面
+end
+deactivate user
+deactivate system
+@enduml

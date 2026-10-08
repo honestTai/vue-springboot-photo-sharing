@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.server.mapper.UserInfoMapper">
+
+    <insert id="addUser" parameterType="com.app.server.entity.UserInfo">
+        insert into userinfo(name, num, pwd, userimageurl,type)
+        values (#{name}, #{num}, #{pwd}, #{userImageUrl},#{type})
+
+    </insert>
+
+    <update id="updateUser">
+        update userinfo
+        set name        = #{name,jdbcType=VARCHAR},
+            num         = #{num,jdbcType=VARCHAR},
+            pwd=#{pwd,jdbcType=VARCHAR},
+            userimageurl=#{userImageUrl,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <delete id="delete">
+        delete from userInfo where id=#{x}
+    </delete>
+
+    <select id="selectPhotoList" resultType="com.app.server.entity.PhotoInfo">
+        select t1.id,
+               t1.photo_url as photoUrl,
+               t1.tag_id    as tagId,
+               t1.dateTime,
+               t1.user_id   as userId,
+               t1.file_path as filePath,
+               t1.fingerprint,
+               t1.title
+        from photoinfo t1
+                 left join userinfo t2 on t1.user_id = t2.id
+        where t2.id = #{userId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectMyCollectPhotoList" resultType="com.app.server.entity.PhotoInfo">
+        select t1.id,
+               t1.photo_url as photoUrl,
+               t1.tag_id    as tagId,
+               t1.dateTime,
+               t1.user_id   as userId,
+               t1.file_path as filePath,
+               t1.fingerprint,
+               t1.title
+        from photoinfo t1,
+             userinfo t2,
+             usercollection t3
+        where t1.id = t3.photo_id
+          and t2.id = t3.user_id
+          and t3.user_id = #{userId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectUserByNumAndPwd" resultType="com.app.server.entity.UserInfo">
+        select *
+        from userinfo
+        where num = #{num,jdbcType=VARCHAR}
+          and pwd = #{pwd,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectUserByNum" resultType="java.lang.Integer">
+        select count(id)
+        from userinfo
+        where num = #{num,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectUserInfoByNum" resultType="com.app.server.entity.UserInfo">
+        select id, `name`, num, pwd, userimageurl as userImageUrl
+        from userInfo
+        where num = #{num,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectUserById" resultType="java.lang.String">
+        select `name`
+        from userInfo
+        where id = #{userId,jdbcType=INTEGER}
+    </select>
+    <select id="selectUserByLikeUserName" resultType="com.app.server.entity.UserInfo">
+        select * from userInfo where type = 0
+        <if test="userName!=null || userName!=''">
+           and `name` like CONCAT('%',#{userName},'%')
+        </if>
+    </select>
+</mapper>

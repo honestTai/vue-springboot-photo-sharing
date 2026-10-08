@@ -1,0 +1,27 @@
+@startuml
+actor "App用户" as user
+participant "登录页面" as loginPage
+database "系统记录" as systemRecords
+participant "系统" as system
+activate user
+user -> loginPage: 进入登录页面
+activate loginPage
+
+user -> loginPage: 输入账号和密码
+loginPage -> system: 用户输入信息
+activate system
+
+system -> systemRecords: 验证账号和密码
+activate systemRecords
+systemRecords --> system: 验证结果
+deactivate systemRecords
+
+alt 验证通过
+  system -> user: 生成唯一凭证
+else 验证未通过
+  system --> user: 提示身份验证失败
+end
+
+deactivate user
+deactivate system
+@enduml

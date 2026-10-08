@@ -1,0 +1,58 @@
+@startuml
+actor "App用户" as user
+participant "个人管理界面" as personalPage
+database "系统记录" as systemRecords
+participant "系统" as system
+
+activate user
+user -> personalPage: 进入个人管理界面
+activate personalPage
+
+user -> personalPage: 查看个人收藏的图片
+personalPage -> system: 用户查看收藏请求
+activate system
+
+system -> systemRecords: 获取个人收藏图片列表
+activate systemRecords
+systemRecords --> system: 收藏图片列表结果
+deactivate systemRecords
+
+user -> personalPage: 上传新图片并添加到收藏
+personalPage -> system: 用户上传图片请求
+activate system
+
+system -> systemRecords: 处理上传图片并添加到收藏
+activate systemRecords
+systemRecords --> system: 处理结果
+deactivate systemRecords
+
+user -> personalPage: 管理上传的图片
+personalPage -> system: 用户管理图片请求
+activate system
+
+system -> systemRecords: 编辑、删除上传图片
+activate systemRecords
+systemRecords --> system: 处理结果
+deactivate systemRecords
+
+user -> personalPage: 管理发布的论坛内容
+personalPage -> system: 用户管理论坛内容请求
+activate system
+
+system -> systemRecords: 编辑、删除发布的论坛内容
+activate systemRecords
+systemRecords --> system: 处理结果
+deactivate systemRecords
+
+user -> personalPage: 查看个人信息统计
+personalPage -> system: 用户查看信息统计请求
+activate system
+
+system -> systemRecords: 获取个人信息统计
+activate systemRecords
+systemRecords --> system: 信息统计结果
+deactivate systemRecords
+
+deactivate user
+deactivate system
+@enduml

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.server.mapper.CommentsMapper">
+    <delete id="delete">
+        delete
+        from comments
+        where id = #{id}
+    </delete>
+
+    <select id="selectList" resultType="com.app.server.entity.Comments">
+        select t1.*,t2.name as userName,t2.userimageurl  from comments t1,userinfo t2 where t1.photoCircleId=#{id,jdbcType=INTEGER} and t1.userId=t2.id
+    </select>
+    <select id="selectOneById" resultType="com.app.server.entity.Comments">
+        select * from comments where id=#{id}
+    </select>
+
+    <insert id="add">
+        insert into comments(photoCircleId,comment,userId,dateTime)values
+        (#{photoCircleId,jdbcType=INTEGER},#{comment,jdbcType=VARCHAR},#{userId,jdbcType=INTEGER},#{dateTime,jdbcType=TIMESTAMP})
+    </insert>
+</mapper>
